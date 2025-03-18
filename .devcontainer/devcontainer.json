@@ -1,0 +1,20 @@
+// For format details, see https://aka.ms/devcontainer.json.
+{
+    "name": "LiteRT devcontainer",
+    "build":  {
+        "dockerfile": "Dockerfile"
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "username": "vscode",
+            "upgradePackages": "false"
+        },
+        "./features/apt-packages": {
+            "packages": "build-essential clang gdb lld python3 valgrind"
+        },
+        "./features/bazel": {
+            "version": "7.4.1"
+        }
+    },
+    "remoteUser": "vscode"
+}

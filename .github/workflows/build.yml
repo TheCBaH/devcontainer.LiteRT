@@ -1,0 +1,74 @@
+name: build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: 30 3 * * SAT
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: cache
+      run: |
+        set -eux
+        ${{ env.EXEC }} df -h
+        df -h
+        mkdir .cache
+        if [ "$(stat --format %d /mnt)" != "$(stat --format %d .)" ]; then
+          df -h /mnt
+          sudo mkdir /mnt/.cache
+          sudo chown ${USER} /mnt/.cache
+          sudo mount --bind /mnt/.cache .cache
+        fi
+    - name: devcontainer
+      uses: ./.github/workflows/actions/devcontainer
+      id: devcontainer
+    - name: setup
+      run: |
+        echo 'EXEC=${{ steps.devcontainer.outputs.exec }}' >> $GITHUB_ENV
+    - name: configure
+      run: |
+        ${{ env.EXEC }} make configure WITH_CLANG=1
+    - name: cache ID
+      id: cache-id
+      run: |
+        LiteRT_commit=$(git -C LiteRT log -n 1 --format=%h)
+        echo "id=${{ hashFiles( 'LiteRT/WORKSPACE', 'LiteRT/.*bazel*', 'LiteRT/.bazel*') }}" >> $GITHUB_OUTPUT
+        echo "id1=$LiteRT_commit" >> $GITHUB_OUTPUT
+        echo "id2=${{ hashFiles( 'Makefile', '.github/workflows/build.yml' ) }}" >> $GITHUB_OUTPUT
+    - name: Cache Bazel repo
+      id: bazel-repo
+      uses: actions/cache@v4
+      with:
+        path: .cache/bazel-repo
+        key: bazel-repo-${{ steps.cache-id.outputs.id }}
+    - name: Cache Bazel build
+      id: bazel-cache
+      uses: actions/cache@v4
+      with:
+        path: .cache/bazel-build
+        key: bazel-build-${{ steps.cache-id.outputs.id }}-${{ steps.cache-id.outputs.id1}}-${{ steps.cache-id.outputs.id2}}
+        restore-keys: |
+          bazel-build-${{ steps.cache-id.outputs.id }}-${{ steps.cache-id.outputs.id1}}
+          bazel-build-${{ steps.cache-id.outputs.id }}
+    - name: fetch
+      run: |
+        ${{ env.EXEC }} make fetch
+    - name: build
+      run: |
+        ${{ env.EXEC }} make build.1
+    - name: build
+      run: |
+        ${{ env.EXEC }} make run
+    - name: disk space
+      run: |
+        ${{ env.EXEC }} df -h
+        df -h
+        du -sh .cache/*

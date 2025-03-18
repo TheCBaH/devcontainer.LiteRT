@@ -1,0 +1,3 @@
+[submodule "LiteRT"]
+	path = LiteRT
+	url = https://github.com/google-ai-edge/LiteRT.git
