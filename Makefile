@@ -65,6 +65,8 @@ build.1:
 build.2:
 	${BAZEL} build ${BAZEL_BUILD_OPTS} ${TARGETS.2}
 
+build: build.1
+
 run:
 	${BAZEL} run ${BAZEL_BUILD_OPTS} ${TARGETS}
 
@@ -73,7 +75,8 @@ clean:
 
 .PHONY:\
  build\
- builder.build\
+ build.1\
+ build.2\
  clean\
  configure\
  fetch\
