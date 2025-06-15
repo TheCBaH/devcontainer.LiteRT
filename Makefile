@@ -19,13 +19,7 @@ CONFIG=/usr/bin/python3\
 
 space=${_space_} ${_space_}
 
-LiteRT/third_party/tensorflow/third_party/xla/third_party/py/python_wheel.bzl:
-	git -C LiteRT/third_party/tensorflow/ checkout master
-
-LiteRT.patch: LiteRT/third_party/tensorflow/third_party/xla/third_party/py/python_wheel.bzl
-	git -C LiteRT apply <cxx_version.patch
- 
-LiteRT.configure: LiteRT/configure LiteRT.patch 
+LiteRT.configure: LiteRT/configure
 	git -C LiteRT checkout .
 	printf "$(subst ${space},\n,${CONFIG})\n" | $<
 
