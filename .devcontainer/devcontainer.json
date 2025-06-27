@@ -16,5 +16,9 @@
             "version": "7.4.1"
         }
     },
-    "remoteUser": "vscode"
+    "remoteUser": "vscode",
+    "postCreateCommand": {
+        "submodules": "git submodule update --recursive --init --depth=1"
+    },
+    "waitFor": "postCreateCommand"
 }
