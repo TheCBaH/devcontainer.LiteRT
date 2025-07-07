@@ -13,8 +13,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-      with:
-        submodules: true
     - name: image
       uses: ./.github/workflows/actions/devcontainer
       with:
