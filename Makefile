@@ -1,5 +1,10 @@
 all: configure build
 
+submodule:
+	git submodule update --init --depth=1
+
+LiteRT/configure: submodule
+
 WITH_CLANG?=1
 
 CONFIG=/usr/bin/python3\
