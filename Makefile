@@ -1,10 +1,5 @@
 all: configure build
 
-submodule:
-	git submodule update --recursive --init --depth=1
-
-LiteRT/configure: submodule
-
 WITH_CLANG?=1
 
 CONFIG=/usr/bin/python3\
@@ -12,19 +7,14 @@ CONFIG=/usr/bin/python3\
  N\
  N\
  ${if ${WITH_CLANG},Y,N}\
- ${if ${WITH_CLANG},/usb/bin/gcc,/usr/bin/clang}\
+ ${if ${WITH_CLANG},/usb/bin/gcc,$(realpath /usr/bin/clang)}\
  -Wno-sign-compare\
  N\
  -Wno-c++20-designator -Wno-gnu-inline-cpp-without-extern\
 
 space=${_space_} ${_space_}
 
-LiteRT/third_party/tensorflow/third_party/xla/third_party/py/python_wheel.bzl:
-	git -C LiteRT/third_party/tensorflow/ checkout master
-
-LiteRT.patch: LiteRT/third_party/tensorflow/third_party/xla/third_party/py/python_wheel.bzl
-
-LiteRT.configure: LiteRT/configure LiteRT.patch
+LiteRT.configure: LiteRT/configure
 	git -C LiteRT checkout .
 	printf "$(subst ${space},\n,${CONFIG})\n" | $<
 
