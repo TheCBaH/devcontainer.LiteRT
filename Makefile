@@ -1,7 +1,7 @@
 all: configure build
 
 submodule:
-	git submodule update --init --depth=1
+	git submodule update --recursive --init --depth=1
 
 LiteRT/configure: submodule
 
@@ -19,7 +19,12 @@ CONFIG=/usr/bin/python3\
 
 space=${_space_} ${_space_}
 
-LiteRT.configure: LiteRT/configure
+LiteRT/third_party/tensorflow/third_party/xla/third_party/py/python_wheel.bzl:
+	git -C LiteRT/third_party/tensorflow/ checkout master
+
+LiteRT.patch: LiteRT/third_party/tensorflow/third_party/xla/third_party/py/python_wheel.bzl
+
+LiteRT.configure: LiteRT/configure LiteRT.patch
 	git -C LiteRT checkout .
 	printf "$(subst ${space},\n,${CONFIG})\n" | $<
 
