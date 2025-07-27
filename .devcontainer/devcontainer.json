@@ -18,7 +18,7 @@
     },
     "remoteUser": "vscode",
     "postCreateCommand": {
-        "submodules": "git submodule update --init --depth=1"
+        "submodules": "git submodule update --recursive --init --depth=1"
     },
     "waitFor": "postCreateCommand"
 }
